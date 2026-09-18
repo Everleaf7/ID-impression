@@ -1,0 +1,4 @@
+idimpression doodle style, a strange flower under spring rain and sunlight --w 1024 --h 576 --d 42
+idimpression doodle style, a tiny dragon holding a crescent moon over simple water lines --w 1024 --h 576 --d 43
+idimpression doodle style, two awkward stick figures sharing an oversized umbrella --w 1024 --h 576 --d 44
+idimpression doodle style, an absurd magical vending machine with one bright accent color --w 1024 --h 576 --d 45

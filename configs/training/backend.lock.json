@@ -1,0 +1,21 @@
+{
+  "trainer": {
+    "name": "kohya-ss/sd-scripts",
+    "repository": "https://github.com/kohya-ss/sd-scripts.git",
+    "commit": "4e624302e0088e39933b31cbc71f24212e900f5f",
+    "license": "Apache-2.0 (repository majority; retain upstream notices)"
+  },
+  "base_model": {
+    "name": "stabilityai/stable-diffusion-xl-base-1.0",
+    "repository": "https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0",
+    "revision": "462165984030d82259a11f4367a4eed129e94a7b",
+    "license": "CreativeML Open RAIL++-M"
+  },
+  "handwriting_font": {
+    "name": "MaokenYingBiKaiShuJ 0.09",
+    "repository": "https://github.com/maoken-fonts/MaokenYingBiKaiShuJ.git",
+    "commit": "862082834f1f8686db122f20bebc69d2bd787467",
+    "file": "MaokenYingBiKaiShuJ_0.09.ttf",
+    "license": "SIL-OFL-1.1"
+  }
+}

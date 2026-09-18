@@ -1,0 +1,22 @@
+[general]
+caption_extension = ".txt"
+shuffle_caption = false
+keep_tokens = 1
+
+[[datasets]]
+resolution = [1024, 576]
+batch_size = 2
+enable_bucket = true
+bucket_no_upscale = false
+min_bucket_reso = 512
+max_bucket_reso = 1536
+bucket_reso_steps = 32
+
+  [[datasets.subsets]]
+  image_dir = "../../data/training/sdxl_v1/train"
+  num_repeats = 1
+  caption_extension = ".txt"
+  shuffle_caption = false
+  flip_aug = false
+  color_aug = false
+  random_crop = false

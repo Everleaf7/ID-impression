@@ -1,0 +1,16 @@
+{
+  "seed": 42,
+  "canvas": {
+    "width": 768,
+    "height": 768,
+    "background": "white"
+  },
+  "generation": {
+    "backend": "placeholder_doodle",
+    "model_version": "placeholder-doodle-v1"
+  },
+  "postprocess": {
+    "font_path": "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
+    "font_size": 30
+  }
+}

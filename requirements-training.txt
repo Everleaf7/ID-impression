@@ -1,0 +1,20 @@
+# Minimal pinned dependencies for sd-scripts commit 4e624302e0088e39933b31cbc71f24212e900f5f.
+# PyTorch and the editable sd-scripts checkout are installed separately by
+# scripts/setup_training_env.sh.
+accelerate==1.6.0
+transformers==4.54.1
+diffusers==0.32.1
+ftfy==6.3.1
+opencv-python==4.10.0.84
+einops==0.7.0
+tensorboard==2.20.0
+safetensors==0.4.5
+toml==0.10.2
+voluptuous==0.15.2
+huggingface-hub==0.34.3
+imagesize==1.4.1
+rich==14.1.0
+sentencepiece==0.2.1
+numpy==1.26.4
+Pillow==12.3.0
+nvitop==1.7.1

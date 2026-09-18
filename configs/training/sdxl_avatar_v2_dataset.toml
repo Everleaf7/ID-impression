@@ -1,0 +1,18 @@
+[general]
+caption_extension = ".txt"
+shuffle_caption = false
+keep_tokens = 1
+
+[[datasets]]
+resolution = [1024, 1024]
+batch_size = 2
+enable_bucket = false
+
+  [[datasets.subsets]]
+  image_dir = "../../data/training/sdxl_avatar_v2/train"
+  num_repeats = 1
+  caption_extension = ".txt"
+  shuffle_caption = false
+  flip_aug = false
+  color_aug = false
+  random_crop = false
