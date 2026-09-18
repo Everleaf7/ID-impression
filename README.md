@@ -17,6 +17,14 @@ ID -> Concept JSON -> text-free doodle -> exact handwritten ID
 - AVIF 到 PNG 的无损解码流程
 - 数据校验和单元测试
 
+## Demo
+
+下面是使用虚构 ID `秋日花信` 生成的真实 LoRA 输出。扩散模型先生成无文字画面，随后由确定性后处理写入准确 ID。
+
+![ID 印象头像生成示例](docs/demo/id-impression-example.png)
+
+仓库不包含训练数据、基础模型或 LoRA 权重。规则占位版本可用于本地检查语义与文件流，但不代表训练模型的最终画质。
+
 ## 隐私约定
 
 公开仓库只包含虚构示例。真实昵称、标注、图片、训练副本、模型权重、日志和生成结果均由 `.gitignore` 排除。请勿把真实数据复制到示例文件中。
@@ -96,58 +104,6 @@ bash scripts/setup_training_env.sh
 
 主要产物为 `avatar_with_id.png`；同目录还会保存无文字图、Concept JSON、prompt 和经过脱敏的生成元数据。
 
-## 网页服务
-
-先用不占用 GPU 的占位后端检查页面和接口：
-
-```bash
-python3 scripts/web_demo.py --backend placeholder
-```
-
-正式演示默认使用 SDXL：
-
-```bash
-.venv-training/bin/python scripts/web_demo.py \
-  --backend sdxl \
-  --gpu 0 \
-  --model /path/to/sdxl-base.safetensors \
-  --lora /path/to/avatar-lora.safetensors \
-  --font /path/to/handwriting-font.ttf
-```
-
-浏览器打开 `http://127.0.0.1:7860`。服务默认只监听本机；开发调试可以通过 SSH 隧道转发端口：
-
-```bash
-ssh -L 7860:127.0.0.1:7860 your-server
-```
-
-如确需监听非本机地址，必须显式提供强随机令牌：
-
-```bash
-export ID_AVATAR_DEMO_TOKEN="$(python3 -c 'import secrets; print(secrets.token_urlsafe(32))')"
-.venv-training/bin/python scripts/web_demo.py \
-  --host 0.0.0.0 --allow-remote --backend sdxl
-```
-
-### 公网部署
-
-正式站点推荐使用 Cloudflare Tunnel，将仅监听回环地址的生成服务接入 HTTPS 公网域名：
-
-```bash
-.venv-training/bin/python scripts/web_demo.py \
-  --host 127.0.0.1 \
-  --port 7860 \
-  --backend sdxl \
-  --gpu 0 \
-  --public-behind-cloudflare
-
-cloudflared tunnel --no-autoupdate run --token-file /secure/path/tunnel-token
-```
-
-在 Cloudflare 控制台将该 Tunnel 的公开主机名指向 `http://127.0.0.1:7860`。令牌必须保存在仓库之外，不能提交或粘贴到 Issue。`--public-behind-cloudflare` 只允许回环监听，并在该前提下使用 Cloudflare 提供的访客 IP 做限流。
-
-内置保护包括同源检查、Host 校验、输入与请求体限制、单访客与全站双层限流、单任务并发、生成超时、安全响应头和自动清理过期结果。生产环境仍应在 Cloudflare 侧开启 WAF/机器人防护并监控 GPU 与磁盘用量。
-
 ## 验证
 
 ```bash
@@ -158,3 +114,7 @@ python3 -m unittest discover -s tests -v
 ## 当前边界
 
 规则联想层只提供最小可运行 baseline；高质量的主观联想仍取决于经授权的数据和人工评审。增加训练步数不能替代数据多样性，也不保证消除机器、界面等主体中的伪文字。
+
+## 许可证
+
+代码以 [MIT License](LICENSE) 发布。`web/assets/` 中的角色立绘已获权利持有人授权在本项目中公开再分发，但不属于 MIT License 的授权范围；未经权利持有人另行许可，不得独立提取、修改或再利用这些立绘。
