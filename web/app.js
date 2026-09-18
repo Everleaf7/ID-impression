@@ -9,6 +9,7 @@ const result = document.querySelector('#result');
 const avatar = document.querySelector('#avatar');
 const download = document.querySelector('#download');
 const health = document.querySelector('#health');
+const tokenField = document.querySelector('.token-field');
 
 function tokenHeaders() {
   const token = tokenInput.value.trim();
@@ -30,7 +31,7 @@ async function checkHealth() {
     const data = await response.json();
     health.textContent = data.busy ? '生成中' : `${data.backend.toUpperCase()} 就绪`;
     health.classList.toggle('busy', data.busy);
-    tokenInput.closest('div').hidden = !data.token_required;
+    tokenField.hidden = !data.token_required;
   } catch {
     health.textContent = '服务离线';
     health.classList.add('busy');
@@ -41,7 +42,7 @@ form.addEventListener('submit', async (event) => {
   event.preventDefault();
   result.hidden = true;
   submit.disabled = true;
-  setStatus('正在把这个名字变成一幅画，通常需要十几秒……', 'working');
+  setStatus('正在把这个名字变成一幅画，请稍候……', 'working');
   try {
     const response = await fetch('/api/generate', {
       method: 'POST',

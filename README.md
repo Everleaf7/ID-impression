@@ -96,7 +96,7 @@ bash scripts/setup_training_env.sh
 
 主要产物为 `avatar_with_id.png`；同目录还会保存无文字图、Concept JSON、prompt 和经过脱敏的生成元数据。
 
-## 网页 Demo
+## 网页服务
 
 先用不占用 GPU 的占位后端检查页面和接口：
 
@@ -115,7 +115,7 @@ python3 scripts/web_demo.py --backend placeholder
   --font /path/to/handwriting-font.ttf
 ```
 
-浏览器打开 `http://127.0.0.1:7860`。服务默认只监听本机；远程使用推荐通过 SSH 隧道转发端口：
+浏览器打开 `http://127.0.0.1:7860`。服务默认只监听本机；开发调试可以通过 SSH 隧道转发端口：
 
 ```bash
 ssh -L 7860:127.0.0.1:7860 your-server
@@ -129,7 +129,24 @@ export ID_AVATAR_DEMO_TOKEN="$(python3 -c 'import secrets; print(secrets.token_u
   --host 0.0.0.0 --allow-remote --backend sdxl
 ```
 
-公网部署时仍应在服务前配置 HTTPS 反向代理。内置保护包括同源检查、Bearer token、输入与请求体限制、来源限流、单任务并发、生成超时、安全响应头和自动清理过期结果。
+### 公网部署
+
+正式站点推荐使用 Cloudflare Tunnel，将仅监听回环地址的生成服务接入 HTTPS 公网域名：
+
+```bash
+.venv-training/bin/python scripts/web_demo.py \
+  --host 127.0.0.1 \
+  --port 7860 \
+  --backend sdxl \
+  --gpu 0 \
+  --public-behind-cloudflare
+
+cloudflared tunnel --no-autoupdate run --token-file /secure/path/tunnel-token
+```
+
+在 Cloudflare 控制台将该 Tunnel 的公开主机名指向 `http://127.0.0.1:7860`。令牌必须保存在仓库之外，不能提交或粘贴到 Issue。`--public-behind-cloudflare` 只允许回环监听，并在该前提下使用 Cloudflare 提供的访客 IP 做限流。
+
+内置保护包括同源检查、Host 校验、输入与请求体限制、单访客与全站双层限流、单任务并发、生成超时、安全响应头和自动清理过期结果。生产环境仍应在 Cloudflare 侧开启 WAF/机器人防护并监控 GPU 与磁盘用量。
 
 ## 验证
 

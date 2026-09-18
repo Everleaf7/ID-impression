@@ -7,60 +7,80 @@
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-  <main class="shell">
-    <section class="intro">
-      <p class="eyebrow">ID IMPRESSION</p>
-      <h1>一个名字，<br>一张随手画。</h1>
-      <p class="lead">输入你的 ID，让模型画出它带来的第一印象。文字会在最后单独写入，所以不会变成乱码。</p>
-      <div class="notes" aria-label="功能说明">
-        <span>主观联想</span><span>简洁鼠绘</span><span>准确手写 ID</span>
-      </div>
-    </section>
+  <div class="character-stage" aria-hidden="true">
+    <img class="character character-front" src="/assets/autumn-outfit-front.png" alt="">
+    <img class="character character-pose" src="/assets/autumn-outfit-pose.png" alt="">
+  </div>
 
-    <section class="card" aria-labelledby="form-title">
-      <div class="card-head">
-        <div>
-          <p class="step">CREATE / 01</p>
-          <h2 id="form-title">生成头像</h2>
+  <div class="page-frame">
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="ID Impression 首页">
+        <span class="brand-mark" aria-hidden="true">✽</span>
+        <span>ID IMPRESSION</span>
+      </a>
+      <p>NAME → IMPRESSION → AVATAR</p>
+    </header>
+
+    <main class="shell">
+      <section class="intro">
+        <p class="eyebrow">THE FIRST IMPRESSION</p>
+        <h1>一个名字，<br>一张随手画。</h1>
+        <p class="lead">输入你的 ID，让模型画出它带来的第一印象。画面保持简洁的鼠绘感，ID 会在最后准确写入。</p>
+        <div class="notes" aria-label="功能说明">
+          <span>主观联想</span><span>简洁鼠绘</span><span>手写 ID</span>
         </div>
-        <div id="health" class="health" aria-live="polite">连接中</div>
-      </div>
+      </section>
 
-      <form id="avatar-form">
-        <label for="user-id">ID / 昵称</label>
-        <div class="input-row">
-          <input id="user-id" name="id" type="text" maxlength="40" autocomplete="off" placeholder="例如：示例黑猫_928" required>
-          <span id="counter">0 / 40</span>
-        </div>
-
-        <div class="two-col">
+      <section class="card" aria-labelledby="form-title">
+        <div class="card-head">
           <div>
-            <label for="seed">Seed</label>
-            <input id="seed" name="seed" type="number" min="0" max="4294967295" value="42" inputmode="numeric">
+            <p class="step">CREATE / 01</p>
+            <h2 id="form-title">生成头像</h2>
           </div>
-          <div>
-            <label for="access-token">访问令牌 <em>远程访问时填写</em></label>
-            <input id="access-token" type="password" autocomplete="off" placeholder="本机访问可留空">
-          </div>
+          <div id="health" class="health" aria-live="polite">连接中</div>
         </div>
 
-        <button id="submit" type="submit">
-          <span class="button-label">开始联想</span>
-          <span class="button-arrow" aria-hidden="true">↗</span>
-        </button>
-      </form>
+        <form id="avatar-form">
+          <label for="user-id">ID / 昵称</label>
+          <div class="input-row">
+            <input id="user-id" name="id" type="text" maxlength="40" autocomplete="off" placeholder="在这里写下你的名字" required>
+            <span id="counter">0 / 40</span>
+          </div>
 
-      <div id="status" class="status" role="status" aria-live="polite"></div>
+          <div class="two-col">
+            <div>
+              <label for="seed">Seed <em>换一个数字，换一种联想</em></label>
+              <input id="seed" name="seed" type="number" min="0" max="4294967295" value="42" inputmode="numeric">
+            </div>
+            <div class="token-field" hidden>
+              <label for="access-token">访问令牌</label>
+              <input id="access-token" type="password" autocomplete="off" placeholder="请输入访问令牌">
+            </div>
+          </div>
 
-      <figure id="result" class="result" hidden>
-        <img id="avatar" alt="生成的 ID 印象头像">
-        <figcaption>
-          <span>生成完成</span>
-          <a id="download" download="id-avatar.png">下载 PNG</a>
-        </figcaption>
-      </figure>
-    </section>
-  </main>
+          <button id="submit" type="submit">
+            <span class="button-label">开始联想</span>
+            <span class="button-arrow" aria-hidden="true">↗</span>
+          </button>
+        </form>
+
+        <div id="status" class="status" role="status" aria-live="polite"></div>
+
+        <figure id="result" class="result" hidden>
+          <img id="avatar" alt="生成的 ID 印象头像">
+          <figcaption>
+            <span>生成完成</span>
+            <a id="download" download="id-avatar.png">下载 PNG</a>
+          </figcaption>
+        </figure>
+      </section>
+    </main>
+
+    <footer>
+      <span>EVERLEAF · ID IMPRESSION</span>
+      <span>每个名字都有自己的画面</span>
+    </footer>
+  </div>
   <script src="/app.js" defer></script>
 </body>
 </html>

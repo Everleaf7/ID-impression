@@ -18,14 +18,20 @@ from src.web_demo.app import (
     ServerContext,
     serve,
     validate_exposure,
+    validate_proxy_mode,
 )
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Run the local-first ID avatar web demo")
+    parser = argparse.ArgumentParser(description="Run the ID impression avatar web service")
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=7860)
     parser.add_argument("--allow-remote", action="store_true")
+    parser.add_argument(
+        "--public-behind-cloudflare",
+        action="store_true",
+        help="trust Cloudflare client IP headers while remaining bound to loopback",
+    )
     parser.add_argument("--backend", choices=("sdxl", "placeholder"), default="sdxl")
     parser.add_argument("--gpu", default="0")
     parser.add_argument("--model", type=Path)
@@ -39,6 +45,7 @@ def main() -> None:
     token = os.environ.get("ID_AVATAR_DEMO_TOKEN", "")
     try:
         validate_exposure(args.host, token, args.allow_remote)
+        validate_proxy_mode(args.host, args.public_behind_cloudflare)
     except PublicError as exc:
         raise SystemExit(str(exc)) from exc
     if not 1 <= args.port <= 65535:
@@ -75,7 +82,9 @@ def main() -> None:
     context = ServerContext(
         generator=AvatarGenerator(config),
         token=token,
-        rate_limiter=RateLimiter(),
+        rate_limiter=RateLimiter(limit=3, window_seconds=900),
+        global_rate_limiter=RateLimiter(limit=20, window_seconds=3600),
+        trust_cloudflare=args.public_behind_cloudflare,
     )
     serve(args.host, args.port, context)
 

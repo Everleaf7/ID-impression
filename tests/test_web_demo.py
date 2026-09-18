@@ -6,10 +6,12 @@ from pathlib import Path
 
 from src.web_demo.app import (
     AvatarGenerator,
+    client_identity,
     GeneratorConfig,
     PublicError,
     RateLimiter,
     validate_exposure,
+    validate_proxy_mode,
     validate_id,
     validate_seed,
     valid_host_header,
@@ -45,6 +47,17 @@ class WebDemoSecurityTest(unittest.TestCase):
         self.assertTrue(valid_host_header("localhost:7860", allowed))
         self.assertFalse(valid_host_header("attacker.example", allowed))
         self.assertFalse(valid_host_header("localhost:7860\r\nX-Test: value", allowed))
+
+    def test_public_proxy_mode_must_stay_on_loopback(self):
+        validate_proxy_mode("127.0.0.1", True)
+        with self.assertRaises(PublicError):
+            validate_proxy_mode("0.0.0.0", True)
+
+    def test_cloudflare_ip_is_trusted_only_from_loopback(self):
+        self.assertEqual(client_identity("127.0.0.1", "203.0.113.8", True), "203.0.113.8")
+        self.assertEqual(client_identity("127.0.0.1", "invalid", True), "127.0.0.1")
+        self.assertEqual(client_identity("198.51.100.2", "203.0.113.8", True), "198.51.100.2")
+        self.assertEqual(client_identity("127.0.0.1", "203.0.113.8", False), "127.0.0.1")
 
     def test_rate_limiter_expires_old_entries(self):
         limiter = RateLimiter(limit=2, window_seconds=10)

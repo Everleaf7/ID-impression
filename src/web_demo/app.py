@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hmac
+import ipaddress
 import json
 import os
 import re
@@ -30,6 +31,8 @@ STATIC_FILES = {
     "/": ("index.html", "text/html; charset=utf-8"),
     "/app.js": ("app.js", "text/javascript; charset=utf-8"),
     "/style.css": ("style.css", "text/css; charset=utf-8"),
+    "/assets/autumn-outfit-front.png": ("assets/autumn-outfit-front.png", "image/png"),
+    "/assets/autumn-outfit-pose.png": ("assets/autumn-outfit-pose.png", "image/png"),
 }
 
 
@@ -79,6 +82,22 @@ def validate_exposure(host: str, token: str, allow_remote: bool) -> None:
         raise PublicError("非本机监听必须显式添加 --allow-remote")
     if len(token) < 24:
         raise PublicError("远程监听必须设置至少 24 字符的 ID_AVATAR_DEMO_TOKEN")
+
+
+def validate_proxy_mode(host: str, public_behind_cloudflare: bool) -> None:
+    if public_behind_cloudflare and not is_loopback_host(host):
+        raise PublicError("Cloudflare 代理模式必须只监听本机回环地址")
+
+
+def client_identity(peer: str, forwarded: str | None, trust_cloudflare: bool) -> str:
+    """Return a non-logged rate-limit key, trusting Cloudflare only over loopback."""
+    if not trust_cloudflare or not is_loopback_host(peer) or not forwarded:
+        return peer
+    candidate = forwarded.strip()
+    try:
+        return str(ipaddress.ip_address(candidate))
+    except ValueError:
+        return peer
 
 
 class RateLimiter:
@@ -208,6 +227,8 @@ class ServerContext:
     generator: AvatarGenerator
     token: str
     rate_limiter: RateLimiter
+    global_rate_limiter: RateLimiter
+    trust_cloudflare: bool = False
 
 
 class DemoServer(ThreadingHTTPServer):
@@ -223,7 +244,7 @@ class DemoServer(ThreadingHTTPServer):
                 "localhost", f"localhost:{port}",
                 "[::1]", f"[::1]:{port}",
             })
-            if is_loopback_host(host)
+            if is_loopback_host(host) and not context.trust_cloudflare
             else None
         )
         super().__init__(address, DemoHandler)
@@ -231,7 +252,7 @@ class DemoServer(ThreadingHTTPServer):
 
 class DemoHandler(BaseHTTPRequestHandler):
     server: DemoServer
-    server_version = "IDAvatarDemo"
+    server_version = "IDAvatar"
     sys_version = ""
 
     def setup(self) -> None:
@@ -329,8 +350,16 @@ class DemoHandler(BaseHTTPRequestHandler):
         if not self._same_origin():
             self._send_json(HTTPStatus.FORBIDDEN, {"error": "请求来源无效"})
             return
-        if not self.server.context.rate_limiter.allow(self.client_address[0]):
+        client = client_identity(
+            self.client_address[0],
+            self.headers.get("CF-Connecting-IP"),
+            self.server.context.trust_cloudflare,
+        )
+        if not self.server.context.rate_limiter.allow(client):
             self._send_json(HTTPStatus.TOO_MANY_REQUESTS, {"error": "请求过于频繁，请稍后再试"})
+            return
+        if not self.server.context.global_rate_limiter.allow("all"):
+            self._send_json(HTTPStatus.TOO_MANY_REQUESTS, {"error": "当前生成额度已用完，请稍后再试"})
             return
         if not self._authorized():
             self._send_json(HTTPStatus.UNAUTHORIZED, {"error": "访问令牌无效"})
@@ -376,7 +405,7 @@ class DemoHandler(BaseHTTPRequestHandler):
 
 def serve(host: str, port: int, context: ServerContext) -> None:
     server = DemoServer((host, port), context)
-    print(f"ID Avatar demo listening on http://{host}:{port}", flush=True)
+    print(f"ID Avatar service listening on http://{host}:{port}", flush=True)
     try:
         server.serve_forever(poll_interval=0.5)
     except KeyboardInterrupt:
