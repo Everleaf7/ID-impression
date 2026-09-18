@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ID 印象头像</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <main class="shell">
+    <section class="intro">
+      <p class="eyebrow">ID IMPRESSION</p>
+      <h1>一个名字，<br>一张随手画。</h1>
+      <p class="lead">输入你的 ID，让模型画出它带来的第一印象。文字会在最后单独写入，所以不会变成乱码。</p>
+      <div class="notes" aria-label="功能说明">
+        <span>主观联想</span><span>简洁鼠绘</span><span>准确手写 ID</span>
+      </div>
+    </section>
+
+    <section class="card" aria-labelledby="form-title">
+      <div class="card-head">
+        <div>
+          <p class="step">CREATE / 01</p>
+          <h2 id="form-title">生成头像</h2>
+        </div>
+        <div id="health" class="health" aria-live="polite">连接中</div>
+      </div>
+
+      <form id="avatar-form">
+        <label for="user-id">ID / 昵称</label>
+        <div class="input-row">
+          <input id="user-id" name="id" type="text" maxlength="40" autocomplete="off" placeholder="例如：示例黑猫_928" required>
+          <span id="counter">0 / 40</span>
+        </div>
+
+        <div class="two-col">
+          <div>
+            <label for="seed">Seed</label>
+            <input id="seed" name="seed" type="number" min="0" max="4294967295" value="42" inputmode="numeric">
+          </div>
+          <div>
+            <label for="access-token">访问令牌 <em>远程访问时填写</em></label>
+            <input id="access-token" type="password" autocomplete="off" placeholder="本机访问可留空">
+          </div>
+        </div>
+
+        <button id="submit" type="submit">
+          <span class="button-label">开始联想</span>
+          <span class="button-arrow" aria-hidden="true">↗</span>
+        </button>
+      </form>
+
+      <div id="status" class="status" role="status" aria-live="polite"></div>
+
+      <figure id="result" class="result" hidden>
+        <img id="avatar" alt="生成的 ID 印象头像">
+        <figcaption>
+          <span>生成完成</span>
+          <a id="download" download="id-avatar.png">下载 PNG</a>
+        </figcaption>
+      </figure>
+    </section>
+  </main>
+  <script src="/app.js" defer></script>
+</body>
+</html>

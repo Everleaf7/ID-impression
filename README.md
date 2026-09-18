@@ -96,6 +96,41 @@ bash scripts/setup_training_env.sh
 
 主要产物为 `avatar_with_id.png`；同目录还会保存无文字图、Concept JSON、prompt 和经过脱敏的生成元数据。
 
+## 网页 Demo
+
+先用不占用 GPU 的占位后端检查页面和接口：
+
+```bash
+python3 scripts/web_demo.py --backend placeholder
+```
+
+正式演示默认使用 SDXL：
+
+```bash
+.venv-training/bin/python scripts/web_demo.py \
+  --backend sdxl \
+  --gpu 0 \
+  --model /path/to/sdxl-base.safetensors \
+  --lora /path/to/avatar-lora.safetensors \
+  --font /path/to/handwriting-font.ttf
+```
+
+浏览器打开 `http://127.0.0.1:7860`。服务默认只监听本机；远程使用推荐通过 SSH 隧道转发端口：
+
+```bash
+ssh -L 7860:127.0.0.1:7860 your-server
+```
+
+如确需监听非本机地址，必须显式提供强随机令牌：
+
+```bash
+export ID_AVATAR_DEMO_TOKEN="$(python3 -c 'import secrets; print(secrets.token_urlsafe(32))')"
+.venv-training/bin/python scripts/web_demo.py \
+  --host 0.0.0.0 --allow-remote --backend sdxl
+```
+
+公网部署时仍应在服务前配置 HTTPS 反向代理。内置保护包括同源检查、Bearer token、输入与请求体限制、来源限流、单任务并发、生成超时、安全响应头和自动清理过期结果。
+
 ## 验证
 
 ```bash
