@@ -1,0 +1,11 @@
+torch==2.8.0
+torchvision==0.23.0
+gradio==5.41.0
+spaces==0.51.3
+diffusers==0.32.1
+transformers==4.54.1
+accelerate==1.6.0
+huggingface-hub==0.34.3
+peft==0.14.0
+safetensors==0.4.5
+Pillow==11.3.0

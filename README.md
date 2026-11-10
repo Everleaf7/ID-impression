@@ -19,6 +19,8 @@ ID -> Concept JSON -> text-free doodle -> exact handwritten ID
 
 ## Demo
 
+在线体验：[Hugging Face ZeroGPU Space](https://huggingface.co/spaces/Everleaf7/ID-impression-avatar)
+
 下面是使用虚构 ID `秋日花信` 生成的真实 LoRA 输出。扩散模型先生成无文字画面，随后由确定性后处理写入准确 ID。
 
 ![ID 印象头像生成示例](docs/demo/id-impression-example.png)
